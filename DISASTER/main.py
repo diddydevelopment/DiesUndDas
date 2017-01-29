@@ -17,6 +17,7 @@ from globals import *
 drawables = []
 bullets = []
 entities = []
+explosions = []
 
 left = False
 right = False
@@ -88,7 +89,7 @@ class Player(Ship):
 background=pyglet.sprite.Sprite(BACKGROUND_IMAGE,0,0)
 background.scale=0.5
 
-p = Player(np.array([50,50]),np.array([0,0,25,25]),np.array([10,10]))
+p = Player(np.array([50,50]),np.array([0,0,25,25]),np.array([60,60]))
 Enemy.PLAYER=p
 
 e = Enemy(np.array([650,250]),np.array([0,25,25,25]),np.array([10,10]))
@@ -153,7 +154,10 @@ def gameLoop(dt):
 	cleanSpriteList(entities)
 
 	p.update(dt)
-	
+
+	for e in explosions:
+		if not e.update():
+			explosions.remove(e)
 	for e in entities:
 		e.update(dt)
 		
@@ -168,13 +172,16 @@ def gameLoop(dt):
 		l.update()
 		for ir,e in enumerate(entities):
 			if e.collides(l):
+				explosions.append(Explosion(e.pos))
 				del bullets[il]
 				del entities[ir]
 
 	#draw everything
 	window.clear()
 	background.draw()
-	
+
+	for e in explosions:
+		e.draw()
 	for e in entities:
 		e.draw()
 	for d in drawables:
