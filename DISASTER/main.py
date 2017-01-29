@@ -8,7 +8,11 @@ from time import time
 
 
 WINDOW_SIZE = (800,600)
-GFX = pyglet.resource.image('gfx.png')
+GFX = pyglet.image.load('gfx.png')
+BACKGROUND_IMAGE = pyglet.image.load('spacePlosion.png')
+background=pyglet.sprite.Sprite(BACKGROUND_IMAGE,0,0)
+background.scale=0.5
+
 SPRITE_SIZE = 25
 
 rocks = []
@@ -20,7 +24,7 @@ up = False
 down = False
 shoot = False
 
-window = pyglet.window.Window(*WINDOW_SIZE)
+window = pyglet.window.Window(*WINDOW_SIZE,vsync=False)
 window.set_fullscreen(False)
 @window.event
 def on_key_press(symbol, modifiers):
@@ -215,6 +219,8 @@ def gameLoop(dt):
 
 
     window.clear()
+    background.draw()
+    
     for r in rocks:
         r.draw()
     for l in laserbeams:
