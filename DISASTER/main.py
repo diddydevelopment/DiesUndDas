@@ -54,6 +54,7 @@ def on_key_release(symbol, modifiers):
         shoot = False
 
 
+
 class Player(Ship):
 	def __init__(self,pos,imgpos,speed):
 		super(Player,self).__init__(pos,imgpos,speed)
@@ -89,8 +90,6 @@ p = Player(np.array([50,50]),np.array([0,0,25,25]),np.array([10,10]))
 
 e = Enemy(np.array([650,250]),np.array([0,25,25,25]),np.array([10,10]),p)
 
-
-
 stageLabel = pyglet.text.Label('Stage: ', font_name='Times New Roman', font_size=36, x=window.width // 2, y=window.height // 2, anchor_x='center', anchor_y='center')
 remainingSecondsLabel = pyglet.text.Label('Remaining Time: ', font_name='Times New Roman', font_size=36, x=window.width // 2, y=window.height // 2-40, anchor_x='center', anchor_y='center')
 
@@ -98,23 +97,50 @@ remainingSecondsLabel = pyglet.text.Label('Remaining Time: ', font_name='Times N
 currentStage = 0
 remainingTime = -1
 stageStarted = time()
+stoneSpawnTime = -1
+lastRockSpawned = time()
+
 
 def cleanSpriteList(sprites):
     for sprite in sprites:
         if sprite.pos[0]+50 < 0 or sprite.pos[1]+50 < 0 or sprite.pos[0]-50 > window.width or sprite.pos[1]-50 > window.height:
             sprites.remove(sprite)
-            print("sprite removed")
+
+
+
+
+def initNewStage():
+    global remainingTime
+    global currentStage
+    global stageStarted
+    global stoneInterval
+    global stoneSpawnTime
+
+    #initial time between stones
+    initStoneInterval = 1000
+    #increase per stage
+    increase_difficulty = 100
+    #maximum difficulty
+    hardest = 200
+
+    #time between stones
+    stoneSpawnTime = max(initStoneInterval - currentStage*increase_difficulty,hardest)
+
+    currentStage = currentStage + 1
+    stageStarted = time()
+
 
 
 def gameLoop(dt):
     global remainingTime
     global currentStage
     global stageStarted
+    global lastRockSpawned
 
     #update everything
     if remainingTime < 0:
-        currentStage = currentStage+1
-        stageStarted = time()
+        initNewStage()
+
 
 
     cleanSpriteList(rocks)
@@ -124,6 +150,11 @@ def gameLoop(dt):
     e.update(dt)
     for r in rocks:
         r.update()
+    if stoneSpawnTime < time()-lastRockSpawned:
+        spawnRock()
+        lastRockSpawned = time()
+
+
     for il,l in enumerate(laserbeams):
         l.update()
         for ir,r in enumerate(rocks):
@@ -157,8 +188,6 @@ def spawnRock(dt):
 pyglet.clock.schedule_interval(gameLoop,1/60.0)
 pyglet.clock.schedule_interval(spawnRock,2)
 #label = pyglet.text.Label('Hello, world', font_name='Times New Roman', font_size=36, x=window.width // 2, y=window.height // 2, anchor_x='center', anchor_y='center')
-
-
 
 
 pyglet.app.run()
