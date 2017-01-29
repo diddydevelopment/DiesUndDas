@@ -12,6 +12,7 @@ from DISASTER.Entities import *
 
 from DISASTER.globals import *
 
+
 rocks = []
 laserbeams = []
 
@@ -21,7 +22,7 @@ up = False
 down = False
 shoot = False
 
-window = pyglet.window.Window(*WINDOW_SIZE)
+window = pyglet.window.Window(*WINDOW_SIZE,vsync=False)
 window.set_fullscreen(False)
 @window.event
 def on_key_press(symbol, modifiers):
@@ -107,6 +108,8 @@ class Player(Entity):
             self.lastShot = time()
 
 
+background=pyglet.sprite.Sprite(BACKGROUND_IMAGE,0,0)
+background.scale=0.5
 
 p = Player(np.array([50,50]),np.array([0,0,25,25]),np.array([10,10]))
 
@@ -144,6 +147,8 @@ def gameLoop(dt):
 
     #draw everything
     window.clear()
+    background.draw()
+    
     for r in rocks:
         r.draw()
     for l in laserbeams:
