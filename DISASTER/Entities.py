@@ -114,8 +114,13 @@ class Ship(Entity):
 			l=LaserBeam(self.pos.copy(),self.dir,self.bulletType)
 			self.addBullet(l)
 			self.lastShot = time()
+			#laserSound.play()
 
 	def update(self,dt):
+		
+		print(self.dx)
+		print(self.dy)
+		
 		self.dx *=Ship.TRACTION
 		self.dy *=Ship.TRACTION
 		

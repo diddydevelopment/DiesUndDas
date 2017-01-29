@@ -51,6 +51,7 @@ class Enemy(Ship):
 			l.targetType='Player'
 			self.addBullet(l)
 			self.lastShot = time()
+			#laserSound.play()
 
 
 class Mothership(Enemy):
