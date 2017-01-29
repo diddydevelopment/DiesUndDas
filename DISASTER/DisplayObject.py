@@ -52,3 +52,14 @@ class LaserBeam(DisplayObject):
     def update(self):
         self.move(self.d)
 
+class Explosion(DisplayObject):
+    DURATION = 2000
+    def __init__(self,pos):
+        super(Explosion,self).__init__(pos,np.array([150,0,50,50]))
+        self.timeSpawned = time()*1000
+
+    def update(self):
+        if time()*1000 - self.timeSpawned > self.DURATION:
+            return False
+        else:
+            return True
