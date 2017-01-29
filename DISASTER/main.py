@@ -83,13 +83,13 @@ class Player(Ship):
 background=pyglet.sprite.Sprite(BACKGROUND_IMAGE,0,0)
 background.scale=0.5
 
-p = Player(np.array([50,50]),np.array([0,0,25,25]),np.array([60,60]))
+p = Player(np.array([50,50]),np.array([0,0,25,25]),60)
 Enemy.PLAYER=p
 
-e = Ufo(np.array([650,250]),np.array([0,25,25,25]),np.array([10,10]))
+e = Ufo(np.array([650,250]),np.array([0,25,25,25]),10)
 entities.append(e)
 
-e = Mothership(np.array([650,650]),np.array([0,50,62,45]),np.array([10,10]))
+e = Mothership(np.array([350,250]),np.array([0,50,62,45]),3)
 e.rotate=False
 entities.append(e)
 
@@ -165,10 +165,12 @@ def gameLoop(dt):
 	for il,l in enumerate(bullets):
 		l.update()
 		for ir,e in enumerate(entities):
-			if e.collides(l):
+			if l.targetType=='Rest' and l.collides(e):
 				explosions.append(Explosion(e.pos))
 				del bullets[il]
 				del entities[ir]
+		if l.targetType=='Player' and l.collides(p):
+			print("dead")
 
 	#draw everything
 	window.clear()

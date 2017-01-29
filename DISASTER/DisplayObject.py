@@ -36,8 +36,8 @@ class DisplayObject():
 
 class LaserBeam(DisplayObject):
     SPEED = 30
-    def __init__(self,pos,dir):
-        super(LaserBeam,self).__init__(pos,np.array([25,0,4,4]))
+    def __init__(self,pos,dir,img):
+        super(LaserBeam,self).__init__(pos,img)
         self.dir = dir
         d = [0, 0]
         if self.dir == Dir.down or self.dir == Dir.downleft or self.dir == Dir.downright:
@@ -49,6 +49,7 @@ class LaserBeam(DisplayObject):
         if self.dir == Dir.right or self.dir == Dir.upright or self.dir == Dir.downright:
             d[0] = LaserBeam.SPEED
         self.d = d
+        self.targetType='Rest'
     def update(self):
         self.move(self.d)
 

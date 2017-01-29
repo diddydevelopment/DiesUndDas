@@ -50,8 +50,7 @@ class Rock(Entity):
 
 
 class Ship(Entity):
-	SHOTTIME = .1
-	TRACTION = .3
+	TRACTION = .2
 	
 	def __init__(self,pos,imgpos,speed):
 		super(Ship,self).__init__(pos,imgpos,speed)
@@ -59,8 +58,10 @@ class Ship(Entity):
 		self.dx = 0
 		self.dy = 0
 		self.lastShot = time()
+		self.shotTime = .1
 		self.shoot = False
 		self.rotate = True
+		self.bulletType=np.array([25,0,4,4])
 	 
 	def setShooting(self,s):
 		self.shoot = s
@@ -104,17 +105,23 @@ class Ship(Entity):
 	
 		
 	def setSpeed(self,vx,vy):
-		self.dx = self.speed[0]*vx
-		self.dy = self.speed[1]*vy
+		self.dx = self.speed*vx
+		self.dy = self.speed*vy
 	   
+	   
+	def checkShooting(self):
+		if self.shoot and self.lastShot+self.shotTime < time():
+			l=LaserBeam(self.pos.copy(),self.dir,self.bulletType)
+			self.addBullet(l)
+			self.lastShot = time()
 
 	def update(self,dt):
 		self.dx *=Ship.TRACTION
 		self.dy *=Ship.TRACTION
 		
-		if(abs(self.dx)<0.001):
+		if(abs(self.dx)<0.01):
 			self.dx=0
-		if(abs(self.dy)<0.001):
+		if(abs(self.dy)<0.01):
 			self.dy=0
 		
 		self.updateDirection()
@@ -124,10 +131,7 @@ class Ship(Entity):
 		
 		self.move(np.array([self.dx,self.dy]))
 		
-		if self.shoot and self.lastShot+Ship.SHOTTIME < time():
-			l=LaserBeam(self.pos.copy(),self.dir)
-			self.addBullet(l)
-			self.lastShot = time()
+		self.checkShooting()
 		
 		
 		
