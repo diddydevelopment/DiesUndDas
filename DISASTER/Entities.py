@@ -6,9 +6,9 @@ from pyglet.window import key
 
 from time import time
 
-from DISASTER.Dir import Dir
-from DISASTER.DisplayObject import *
-from DISASTER.globals import *
+from Dir import Dir
+from DisplayObject import *
+from globals import *
 
 class Entity(DisplayObject):
     def __init__(self,pos,imgpos,speed):

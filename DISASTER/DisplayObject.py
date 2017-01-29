@@ -6,9 +6,9 @@ from pyglet.window import key
 
 from time import time
 
-from DISASTER.Dir import Dir
+from Dir import Dir
 
-from DISASTER.globals import *
+from globals import *
 
 class DisplayObject():
     def __init__(self,pos,imgpos):

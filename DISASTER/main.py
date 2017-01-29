@@ -6,11 +6,11 @@ from pyglet.window import key
 
 from time import time
 
-from DISASTER.Dir import Dir
-from DISASTER.DisplayObject import *
-from DISASTER.Entities import *
+from Dir import Dir
+from DisplayObject import *
+from Entities import *
 
-from DISASTER.globals import *
+from globals import *
 
 
 rocks = []
