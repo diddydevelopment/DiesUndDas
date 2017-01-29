@@ -18,7 +18,7 @@ class Entity(DisplayObject):
 		raise NotImplementedError('Please implement update method')
 
 
-class Rock(DisplayObject):
+class Rock(Entity):
 	MAX_SPEED = 5
 	def __init__(self,pos=None,speed=None):
 		self.dir = rn.randint(0,3)
@@ -35,9 +35,9 @@ class Rock(DisplayObject):
 			elif self.dir == Dir.left:
 				pos = np.array([WINDOW_SIZE[0], rn.random() * WINDOW_SIZE[1]])
 				self.curSpeed = [-rn.random() * Rock.MAX_SPEED,0]
-		super(Rock, self).__init__(pos, [50,0,25,25])
+		super(Rock, self).__init__(pos, [50,0,25,25],Rock.MAX_SPEED)
 
-	def update(self):
+	def update(self,dt):
 		self.move(self.curSpeed)
 		if self.dir == Dir.down and self.pos[1] < -SPRITE_SIZE:
 			self.pos[1] = WINDOW_SIZE[1]
