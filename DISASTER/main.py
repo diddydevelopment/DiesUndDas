@@ -155,6 +155,7 @@ def gameLoop(dt):
 
 	cleanSpriteList(drawables)
 	cleanSpriteList(entities)
+	cleanSpriteList(bullets)
 
 	p.update(dt)
 
