@@ -94,6 +94,11 @@ background.scale=0.5
 explosionSound = pyglet.media.StaticSource(pyglet.media.load('explosion.wav'))
 laserSound = pyglet.media.StaticSource(pyglet.media.load('shoot.wav'))
 
+musicPlayer = pyglet.media.Player()
+music = pyglet.media.load('music.wav', streaming=True)
+musicPlayer.queue(music)
+musicPlayer.eos_action = musicPlayer.EOS_LOOP
+musicPlayer.play()
 
 
 p = Player(np.array([50,50]),np.array([0,0,25,25]),np.array([60,60]))
