@@ -24,6 +24,7 @@ right = False
 up = False
 down = False
 shoot = False
+gameOver=False
 
 window = pyglet.window.Window(*WINDOW_SIZE,vsync=False)
 window.set_fullscreen(False)
@@ -74,15 +75,9 @@ class Player(Ship):
 		if down:
 			y=-1
 
-		self.setSpeed(x,y)
-		self.setShooting(shoot)
-
-		if self.shoot and self.lastShot+Ship.SHOTTIME < time():
-			l=LaserBeam(self.pos.copy(),self.dir)
-			bullets.append(l)
-			drawables.append(l)
-			self.lastShot = time()
-			laserSound.play()
+		if gameOver==False:
+			self.setSpeed(x,y)
+			self.setShooting(shoot)
 
 		super().update(dt)
 
@@ -101,15 +96,10 @@ musicPlayer.eos_action = musicPlayer.EOS_LOOP
 musicPlayer.play()
 
 
-p = Player(np.array([50,50]),np.array([0,0,25,25]),np.array([60,60]))
+p = Player(np.array([WINDOW_SIZE[0]/2,WINDOW_SIZE[1]/2]),np.array([0,0,25,25]),60)
 Enemy.PLAYER=p
 
-e = Enemy(np.array([650,250]),np.array([0,25,25,25]),np.array([10,10]))
-entities.append(e)
 
-e = Enemy(np.array([650,650]),np.array([0,50,62,45]),np.array([10,10]))
-e.rotate=False
-entities.append(e)
 
 stageLabel = pyglet.text.Label('Stage: ', font_name='Times New Roman', font_size=36, x=window.width // 2, y=window.height // 2, anchor_x='center', anchor_y='center')
 remainingSecondsLabel = pyglet.text.Label('Remaining Time: ', font_name='Times New Roman', font_size=36, x=window.width // 2, y=window.height // 2-40, anchor_x='center', anchor_y='center')
@@ -120,6 +110,7 @@ remainingTime = -1
 stageStarted = time()
 stoneSpawnTime = -1
 lastRockSpawned = time()
+lastEnemySpawned = time()
 
 
 def cleanSpriteList(sprites):
@@ -134,9 +125,12 @@ def initNewStage():
 	global stageStarted
 	global stoneInterval
 	global stoneSpawnTime
+	global enemySpawnTime
 
 	#initial time between stones
 	initStoneInterval = 1000
+	
+	initEnemyInterval = 10000
 	#increase per stage
 	increase_difficulty = 100
 	#maximum difficulty
@@ -144,6 +138,8 @@ def initNewStage():
 
 	#time between stones
 	stoneSpawnTime = max(initStoneInterval - currentStage*increase_difficulty,hardest)
+	
+	enemySpawnTime = max(initEnemyInterval - currentStage*increase_difficulty,hardest)
 
 	currentStage = currentStage + 1
 	stageStarted = time()
@@ -155,7 +151,10 @@ def gameLoop(dt):
 	global currentStage
 	global stageStarted
 	global lastRockSpawned
+	global lastEnemySpawned
 	global stoneSpawnTime
+	global enemySpawnTime
+	global gameOver
 
 	#update everything
 	if remainingTime < 0:
@@ -164,6 +163,7 @@ def gameLoop(dt):
 
 	cleanSpriteList(drawables)
 	cleanSpriteList(entities)
+	cleanSpriteList(bullets)
 
 	p.update(dt)
 
@@ -172,6 +172,10 @@ def gameLoop(dt):
 			explosions.remove(e)
 	for e in entities:
 		e.update(dt)
+		if gameOver==False and e!=p and e.collides(p):
+			explosions.append(Explosion(p.pos))
+			explosionSound.play()
+			gameOver=True
 		
 	for d in drawables:
 		d.update()
@@ -179,11 +183,16 @@ def gameLoop(dt):
 	if stoneSpawnTime < time()*1000-lastRockSpawned:
 		spawnRock()
 		lastRockSpawned = time()*1000
+		
+	if enemySpawnTime < time()*1000-lastEnemySpawned:
+		spawnEnemy()
+		lastEnemySpawned = time()*1000
+
 
 	for l in bullets:
 		l.update()
 		for e in entities:
-			if e.collides(l):
+			if l.targetType=='Rest' and l.collides(e):
 				try:
 					explosions.append(Explosion(e.pos))
 					explosionSound.play()
@@ -191,7 +200,12 @@ def gameLoop(dt):
 					entities.remove(e)
 				except:
 					pass
-
+		if gameOver==False and l.targetType=='Player' and l.collides(p):
+			explosions.append(Explosion(p.pos))
+			explosionSound.play()
+			gameOver=True
+			
+			
 	#draw everything
 	window.clear()
 	background.draw()
@@ -202,10 +216,21 @@ def gameLoop(dt):
 		e.draw()
 	for d in drawables:
 		d.draw()
-	p.draw()
+	if gameOver==False:
+		p.draw()
 	remainingTime = STAGE_DURATION-(time()-stageStarted)
 	stageLabel.text = "Stage: "+str(currentStage)
 	remainingSecondsLabel.text = "Remaining Time: "+str(remainingTime)[0:5]
+	
+	if gameOver:
+		if(currentStage<2):
+			stageLabel.text = "GAME OVER SUCKER! Stage " +str(currentStage)
+		elif (currentStage<4):
+			stageLabel.text = "KEEP GOING! Stage " +str(currentStage)
+		elif (currentStage<8):
+			stageLabel.text = "YOU ARE TOO GOOD! Stage  " +str(currentStage)
+			
+		
 
 	stageLabel.draw()
 	remainingSecondsLabel.draw()
@@ -214,6 +239,21 @@ def gameLoop(dt):
 def spawnRock():
 	entities.append(Rock())
 
+def spawnBullet(s,l):
+    bullets.append(l)
+    drawables.append(l)
+    
+def spawnEnemy():
+	if(np.random.random_sample()<0.2):
+		e = Mothership(np.array([350,250]),np.array([0,50,62,45]),3)
+	else:
+		e = Ufo(np.array([0,0]),np.array([0,25,25,25]),10)
+	e.randomStartPos()
+	entities.append(e)
+	
+	
+    
+Ship.addBullet=spawnBullet
 
 pyglet.clock.schedule_interval(gameLoop,1/60.0)
 #pyglet.clock.schedule_interval(spawnRock)

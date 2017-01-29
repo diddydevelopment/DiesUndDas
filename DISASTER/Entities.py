@@ -16,29 +16,38 @@ class Entity(DisplayObject):
 		self.speed = speed
 	def update(self):
 		raise NotImplementedError('Please implement update method')
-
-
+		
+	def randomStartPos(self):
+		self.dir = rn.randint(0,3)
+		if self.dir == Dir.down:
+			self.pos = np.array([rn.random() * WINDOW_SIZE[0], WINDOW_SIZE[1]])
+		elif self.dir == Dir.up:
+			self.pos = np.array([rn.random() * WINDOW_SIZE[0], -SPRITE_SIZE])
+		elif self.dir == Dir.right:
+			self.pos = np.array([-SPRITE_SIZE, rn.random() * WINDOW_SIZE[1]])
+		elif self.dir == Dir.left:
+			self.pos = np.array([WINDOW_SIZE[0], rn.random() * WINDOW_SIZE[1]])
+				
 class Rock(Entity):
 	MAX_SPEED = 5
 	def __init__(self,pos=None,speed=None):
-		self.dir = rn.randint(0,3)
-		if pos is None:
-			if self.dir == Dir.down:
-				pos = np.array([rn.random() * WINDOW_SIZE[0], WINDOW_SIZE[1]])
-				self.curSpeed = [0, -rn.random() * Rock.MAX_SPEED]
-			elif self.dir == Dir.up:
-				pos = np.array([rn.random() * WINDOW_SIZE[0], -SPRITE_SIZE])
-				self.curSpeed = [0, rn.random() * Rock.MAX_SPEED]
-			elif self.dir == Dir.right:
-				pos = np.array([-SPRITE_SIZE, rn.random() * WINDOW_SIZE[1]])
-				self.curSpeed = [rn.random() * Rock.MAX_SPEED,0]
-			elif self.dir == Dir.left:
-				pos = np.array([WINDOW_SIZE[0], rn.random() * WINDOW_SIZE[1]])
-				self.curSpeed = [-rn.random() * Rock.MAX_SPEED,0]
-		super(Rock, self).__init__(pos, [50,0,25,25],Rock.MAX_SPEED)
+		self.randomStartPos()
+		
+		if self.dir == Dir.down:
+			self.curSpeed = [0, -rn.random() * Rock.MAX_SPEED]
+		elif self.dir == Dir.up:
+			self.curSpeed = [0, rn.random() * Rock.MAX_SPEED]
+		elif self.dir == Dir.right:
+			self.curSpeed = [rn.random() * Rock.MAX_SPEED,0]
+		elif self.dir == Dir.left:
+			self.curSpeed = [-rn.random() * Rock.MAX_SPEED,0]
+				
+		super(Rock, self).__init__(self.pos, [50,0,25,25],Rock.MAX_SPEED)
 
 	def update(self,dt):
 		self.move(self.curSpeed)
+		
+		'''
 		if self.dir == Dir.down and self.pos[1] < -SPRITE_SIZE:
 			self.pos[1] = WINDOW_SIZE[1]
 		elif self.dir == Dir.up and self.pos[1] > WINDOW_SIZE[1]:
@@ -47,11 +56,10 @@ class Rock(Entity):
 			self.pos[0] = -SPRITE_SIZE
 		elif self.dir == Dir.left and self.pos[0] < SPRITE_SIZE:
 			self.pos[0] = WINDOW_SIZE[0]
-
+		'''
 
 class Ship(Entity):
-	SHOTTIME = .1
-	TRACTION = .1
+	TRACTION = .2
 	
 	def __init__(self,pos,imgpos,speed):
 		super(Ship,self).__init__(pos,imgpos,speed)
@@ -59,8 +67,10 @@ class Ship(Entity):
 		self.dx = 0
 		self.dy = 0
 		self.lastShot = time()
+		self.shotTime = .1
 		self.shoot = False
 		self.rotate = True
+		self.bulletType=np.array([25,0,4,4])
 	 
 	def setShooting(self,s):
 		self.shoot = s
@@ -104,17 +114,24 @@ class Ship(Entity):
 	
 		
 	def setSpeed(self,vx,vy):
-		self.dx = self.speed[0]*vx
-		self.dy = self.speed[1]*vy
+		self.dx = self.speed*vx
+		self.dy = self.speed*vy
 	   
+	   
+	def checkShooting(self):
+		if self.shoot and self.lastShot+self.shotTime < time():
+			l=LaserBeam(self.pos.copy(),self.dir,self.bulletType)
+			self.addBullet(l)
+			self.lastShot = time()
+			#laserSound.play()
 
 	def update(self,dt):
 		self.dx *=Ship.TRACTION
 		self.dy *=Ship.TRACTION
 		
-		if(abs(self.dx)<0.001):
+		if(abs(self.dx)<0.01):
 			self.dx=0
-		if(abs(self.dy)<0.001):
+		if(abs(self.dy)<0.01):
 			self.dy=0
 		
 		self.updateDirection()
@@ -124,7 +141,7 @@ class Ship(Entity):
 		
 		self.move(np.array([self.dx,self.dy]))
 		
-
+		self.checkShooting()
 		
 		
 		
