@@ -54,7 +54,6 @@ def on_key_release(symbol, modifiers):
 
 
 
-
 class Player(Entity):
     SHOTTIME = .1
     def __init__(self,pos,imgpos,speed):
@@ -114,7 +113,6 @@ background.scale=0.5
 p = Player(np.array([50,50]),np.array([0,0,25,25]),np.array([10,10]))
 
 
-
 stageLabel = pyglet.text.Label('Stage: ', font_name='Times New Roman', font_size=36, x=window.width // 2, y=window.height // 2, anchor_x='center', anchor_y='center')
 remainingSecondsLabel = pyglet.text.Label('Remaining Time: ', font_name='Times New Roman', font_size=36, x=window.width // 2, y=window.height // 2-40, anchor_x='center', anchor_y='center')
 
@@ -122,6 +120,13 @@ remainingSecondsLabel = pyglet.text.Label('Remaining Time: ', font_name='Times N
 currentStage = 0
 remainingTime = -1
 stageStarted = time()
+
+def cleanSpriteList(sprites):
+    for sprite in sprites:
+        if sprite.pos[0]+50 < 0 or sprite.pos[1]+50 < 0 or sprite.pos[0]-50 > window.width or sprite.pos[1]-50 > window.height:
+            sprites.remove(sprite)
+            print("sprite removed")
+
 
 def gameLoop(dt):
     global remainingTime
@@ -133,6 +138,9 @@ def gameLoop(dt):
         currentStage = currentStage+1
         stageStarted = time()
 
+
+    cleanSpriteList(rocks)
+    cleanSpriteList(laserbeams)
 
     p.update(dt)
     for r in rocks:
@@ -169,8 +177,6 @@ def spawnRock(dt):
 pyglet.clock.schedule_interval(gameLoop,1/60.0)
 pyglet.clock.schedule_interval(spawnRock,2)
 #label = pyglet.text.Label('Hello, world', font_name='Times New Roman', font_size=36, x=window.width // 2, y=window.height // 2, anchor_x='center', anchor_y='center')
-
-
 
 
 pyglet.app.run()
