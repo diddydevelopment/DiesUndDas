@@ -16,6 +16,7 @@ from globals import *
 
 rocks = []
 laserbeams = []
+enemies = []
 
 left = False
 right = False
@@ -86,9 +87,14 @@ background=pyglet.sprite.Sprite(BACKGROUND_IMAGE,0,0)
 background.scale=0.5
 
 p = Player(np.array([50,50]),np.array([0,0,25,25]),np.array([10,10]))
+Enemy.PLAYER=p
 
+e = Enemy(np.array([650,250]),np.array([0,25,25,25]),np.array([10,10]))
+enemies.append(e)
 
-e = Enemy(np.array([650,250]),np.array([0,25,25,25]),np.array([10,10]),p)
+e = Enemy(np.array([650,650]),np.array([0,50,62,45]),np.array([10,10]))
+e.rotate=False
+enemies.append(e)
 
 stageLabel = pyglet.text.Label('Stage: ', font_name='Times New Roman', font_size=36, x=window.width // 2, y=window.height // 2, anchor_x='center', anchor_y='center')
 remainingSecondsLabel = pyglet.text.Label('Remaining Time: ', font_name='Times New Roman', font_size=36, x=window.width // 2, y=window.height // 2-40, anchor_x='center', anchor_y='center')
@@ -147,7 +153,9 @@ def gameLoop(dt):
     cleanSpriteList(laserbeams)
 
     p.update(dt)
-    e.update(dt)
+    for e in enemies:
+        e.update(dt)
+        
     for r in rocks:
         r.update()
     if stoneSpawnTime < time()-lastRockSpawned:
@@ -167,12 +175,13 @@ def gameLoop(dt):
     window.clear()
     background.draw()
     
+    for e in enemies:
+        e.draw()
     for r in rocks:
         r.draw()
     for l in laserbeams:
         l.draw()
     p.draw()
-    e.draw()
     remainingTime = STAGE_DURATION-(time()-stageStarted)
     stageLabel.text = "Stage: "+str(currentStage)
     remainingSecondsLabel.text = "Remaining Time: "+str(remainingTime)[0:5]

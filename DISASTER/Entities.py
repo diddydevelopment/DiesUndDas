@@ -60,6 +60,7 @@ class Ship(Entity):
 		self.dy = 0
 		self.lastShot = time()
 		self.shoot = False
+		self.rotate = True
 	 
 	def setShooting(self,s):
 		self.shoot = s
@@ -119,7 +120,9 @@ class Ship(Entity):
 			self.dy=0
 		
 		self.updateDirection()
-		self.updateRotationImg()
+		
+		if self.rotate:
+			self.updateRotationImg()
 		
 		self.move(np.array([int(self.dx),int(self.dy)]))
 		

@@ -13,13 +13,14 @@ from globals import *
 
 
 class Enemy(Ship):
-	def __init__(self,pos,imgpos,speed,player):
+	PLAYER=None
+	
+	def __init__(self,pos,imgpos,speed):
 		super(Enemy,self).__init__(pos,imgpos,speed)
-		self.player=player
 
 	def update(self,dt):
-		x=np.sign(self.pos[0]-self.player.pos[0])*-1
-		y=np.sign(self.pos[1]-self.player.pos[1])*-1
+		x=np.sign(self.pos[0]-Enemy.PLAYER.pos[0])*-1
+		y=np.sign(self.pos[1]-Enemy.PLAYER.pos[1])*-1
 		
 		self.setSpeed(x,y)
 		
