@@ -82,12 +82,19 @@ class Player(Ship):
 			bullets.append(l)
 			drawables.append(l)
 			self.lastShot = time()
+			laserSound.play()
 
 		super().update(dt)
 
 
 background=pyglet.sprite.Sprite(BACKGROUND_IMAGE,0,0)
 background.scale=0.5
+
+#http://www.bfxr.net/
+explosionSound = pyglet.media.StaticSource(pyglet.media.load('explosion.wav'))
+laserSound = pyglet.media.StaticSource(pyglet.media.load('shoot.wav'))
+
+
 
 p = Player(np.array([50,50]),np.array([0,0,25,25]),np.array([60,60]))
 Enemy.PLAYER=p
@@ -168,13 +175,17 @@ def gameLoop(dt):
 		spawnRock()
 		lastRockSpawned = time()*1000
 
-	for il,l in enumerate(bullets):
+	for l in bullets:
 		l.update()
-		for ir,e in enumerate(entities):
+		for e in entities:
 			if e.collides(l):
-				explosions.append(Explosion(e.pos))
-				del bullets[il]
-				del entities[ir]
+				try:
+					explosions.append(Explosion(e.pos))
+					explosionSound.play()
+					bullets.remove(l)
+					entities.remove(e)
+				except:
+					pass
 
 	#draw everything
 	window.clear()
