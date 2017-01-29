@@ -51,7 +51,7 @@ class Rock(Entity):
 
 class Ship(Entity):
 	SHOTTIME = .1
-	TRACTION = .1
+	TRACTION = .3
 	
 	def __init__(self,pos,imgpos,speed):
 		super(Ship,self).__init__(pos,imgpos,speed)
@@ -124,7 +124,10 @@ class Ship(Entity):
 		
 		self.move(np.array([self.dx,self.dy]))
 		
-
+		if self.shoot and self.lastShot+Ship.SHOTTIME < time():
+			l=LaserBeam(self.pos.copy(),self.dir)
+			self.addBullet(l)
+			self.lastShot = time()
 		
 		
 		

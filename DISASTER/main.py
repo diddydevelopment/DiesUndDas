@@ -76,12 +76,6 @@ class Player(Ship):
 		self.setSpeed(x,y)
 		self.setShooting(shoot)
 
-		if self.shoot and self.lastShot+Ship.SHOTTIME < time():
-			l=LaserBeam(self.pos.copy(),self.dir)
-			bullets.append(l)
-			drawables.append(l)
-			self.lastShot = time()
-
 		super().update(dt)
 
 
@@ -91,10 +85,10 @@ background.scale=0.5
 p = Player(np.array([50,50]),np.array([0,0,25,25]),np.array([10,10]))
 Enemy.PLAYER=p
 
-e = Enemy(np.array([650,250]),np.array([0,25,25,25]),np.array([10,10]))
+e = Ufo(np.array([650,250]),np.array([0,25,25,25]),np.array([10,10]))
 entities.append(e)
 
-e = Enemy(np.array([650,650]),np.array([0,50,62,45]),np.array([10,10]))
+e = Mothership(np.array([650,650]),np.array([0,50,62,45]),np.array([10,10]))
 e.rotate=False
 entities.append(e)
 
@@ -191,6 +185,11 @@ def gameLoop(dt):
 def spawnRock():
 	entities.append(Rock())
 
+def spawnBullet(s,l):
+    bullets.append(l)
+    drawables.append(l)
+    
+Ship.addBullet=spawnBullet
 
 pyglet.clock.schedule_interval(gameLoop,1/60.0)
 #pyglet.clock.schedule_interval(spawnRock)
