@@ -9,12 +9,14 @@ from time import time
 from Dir import Dir
 from DisplayObject import *
 from Entities import *
+from Enemies import *
 
 from globals import *
 
 
 rocks = []
 laserbeams = []
+enemies = []
 
 left = False
 right = False
@@ -54,64 +56,45 @@ def on_key_release(symbol, modifiers):
 
 
 
-class Player(Entity):
-    SHOTTIME = .1
-    def __init__(self,pos,imgpos,speed):
-        super(Player,self).__init__(pos,imgpos,speed)
-        self.dir = Dir.up
-        self.lastShot = time()
+class Player(Ship):
+	def __init__(self,pos,imgpos,speed):
+		super(Player,self).__init__(pos,imgpos,speed)
 
+	def update(self,dt):
+		x=0
+		y=0
 
-    def update(self,dt):
-        dx = 0
-        dy = 0
-        if left:
-            dx = dx - self.speed[0]
-            self.sprite.rotation = 270
-            self.dir = Dir.left
-        if right:
-            dx = dx + self.speed[0]
-            self.sprite.rotation = 90
-            self.dir = Dir.right
+		if left:
+			x=-1
+		if up:
+			y=1
+		if right:
+			x=1
+		if down:
+			y=-1
 
-        if up:
-            dy = dy + self.speed[1]
-            self.sprite.rotation = 0
-            self.dir = Dir.up
+		self.setSpeed(x,y)
+		self.setShooting(shoot)
 
-        if down:
-            dy = dy - self.speed[1]
-            self.sprite.rotation = 180
-            self.dir = Dir.down
+		if self.shoot and self.lastShot+Ship.SHOTTIME < time():
+			laserbeams.append(LaserBeam(self.pos.copy(),self.dir))
+			self.lastShot = time()
 
-        if up and right:
-            self.sprite.rotation = 45
-            self.dir = Dir.upright
-
-        if down and right:
-            self.sprite.rotation = 135
-            self.dir = Dir.downright
-
-        if down and left:
-            self.sprite.rotation = 225
-            self.dir = Dir.downleft
-
-        if up and left:
-            self.sprite.rotation = 315
-            self.dir = Dir.upleft
-
-        self.move(np.array([dx,dy]))
-
-        if shoot and self.lastShot+Player.SHOTTIME < time():
-            laserbeams.append(LaserBeam(self.pos.copy(),self.dir))
-            self.lastShot = time()
+		super().update(dt)
 
 
 background=pyglet.sprite.Sprite(BACKGROUND_IMAGE,0,0)
 background.scale=0.5
 
 p = Player(np.array([50,50]),np.array([0,0,25,25]),np.array([10,10]))
+Enemy.PLAYER=p
 
+e = Enemy(np.array([650,250]),np.array([0,25,25,25]),np.array([10,10]))
+enemies.append(e)
+
+e = Enemy(np.array([650,650]),np.array([0,50,62,45]),np.array([10,10]))
+e.rotate=False
+enemies.append(e)
 
 stageLabel = pyglet.text.Label('Stage: ', font_name='Times New Roman', font_size=36, x=window.width // 2, y=window.height // 2, anchor_x='center', anchor_y='center')
 remainingSecondsLabel = pyglet.text.Label('Remaining Time: ', font_name='Times New Roman', font_size=36, x=window.width // 2, y=window.height // 2-40, anchor_x='center', anchor_y='center')
@@ -169,7 +152,9 @@ def gameLoop(dt):
     cleanSpriteList(laserbeams)
 
     p.update(dt)
-
+    for e in enemies:
+        e.update(dt)
+        
     for r in rocks:
         r.update()
 
@@ -191,6 +176,8 @@ def gameLoop(dt):
     window.clear()
     background.draw()
     
+    for e in enemies:
+        e.draw()
     for r in rocks:
         r.draw()
     for l in laserbeams:
