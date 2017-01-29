@@ -114,6 +114,7 @@ def cleanSpriteList(sprites):
 		if sprite.pos[0]+50 < 0 or sprite.pos[1]+50 < 0 or sprite.pos[0]-50 > window.width or sprite.pos[1]-50 > window.height:
 			sprites.remove(sprite)
 
+
 def initNewStage():
 	global remainingTime
 	global currentStage
@@ -141,6 +142,7 @@ def gameLoop(dt):
 	global currentStage
 	global stageStarted
 	global lastRockSpawned
+	global stoneSpawnTime
 
 	#update everything
 	if remainingTime < 0:
@@ -148,6 +150,7 @@ def gameLoop(dt):
 
 
 	cleanSpriteList(drawables)
+	cleanSpriteList(entities)
 
 	p.update(dt)
 	
@@ -156,11 +159,10 @@ def gameLoop(dt):
 		
 	for d in drawables:
 		d.update()
-		
-	if stoneSpawnTime < time()-lastRockSpawned:
-		spawnRock()
-		lastRockSpawned = time()
 
+	if stoneSpawnTime < time()*1000-lastRockSpawned:
+		spawnRock()
+		lastRockSpawned = time()*1000
 
 	for il,l in enumerate(bullets):
 		l.update()
@@ -168,7 +170,6 @@ def gameLoop(dt):
 			if e.collides(l):
 				del bullets[il]
 				del entities[ir]
-
 
 	#draw everything
 	window.clear()
@@ -187,12 +188,12 @@ def gameLoop(dt):
 	remainingSecondsLabel.draw()
 
 
-def spawnRock(dt):
+def spawnRock():
 	entities.append(Rock())
 
 
 pyglet.clock.schedule_interval(gameLoop,1/60.0)
-pyglet.clock.schedule_interval(spawnRock,2)
+#pyglet.clock.schedule_interval(spawnRock)
 #label = pyglet.text.Label('Hello, world', font_name='Times New Roman', font_size=36, x=window.width // 2, y=window.height // 2, anchor_x='center', anchor_y='center')
 
 

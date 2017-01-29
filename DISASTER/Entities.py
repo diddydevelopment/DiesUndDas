@@ -82,8 +82,6 @@ class Ship(Entity):
 			self.dir= Dir.left
 		elif self.dx > 0:
 			self.dir= Dir.right
-		else:
-			self.dir= Dir.up
 			
 	 
 	def updateRotationImg(self):
