@@ -12,7 +12,7 @@ from globals import *
 
 class DisplayObject():
     def __init__(self,pos,imgpos):
-        self.pos = pos
+        self.pos = np.array(pos,np.float32)
         subimg = GFX.get_region(x=imgpos[0],y=GFX.height-imgpos[1]-imgpos[3],width=imgpos[2],height=imgpos[3])
         subimg.anchor_x = subimg.width//2
         subimg.anchor_y = subimg.height//2

@@ -122,7 +122,7 @@ class Ship(Entity):
 		if self.rotate:
 			self.updateRotationImg()
 		
-		self.move(np.array([int(self.dx),int(self.dy)]))
+		self.move(np.array([self.dx,self.dy]))
 		
 
 		
