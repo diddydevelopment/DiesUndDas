@@ -24,6 +24,7 @@ right = False
 up = False
 down = False
 shoot = False
+gameOver=False
 
 window = pyglet.window.Window(*WINDOW_SIZE,vsync=False)
 window.set_fullscreen(False)
@@ -74,8 +75,9 @@ class Player(Ship):
 		if down:
 			y=-1
 
-		self.setSpeed(x,y)
-		self.setShooting(shoot)
+		if gameOver==False:
+			self.setSpeed(x,y)
+			self.setShooting(shoot)
 
 		super().update(dt)
 
@@ -89,7 +91,7 @@ laserSound = pyglet.media.StaticSource(pyglet.media.load('shoot.wav'))
 
 
 
-p = Player(np.array([50,50]),np.array([0,0,25,25]),60)
+p = Player(np.array([WINDOW_SIZE[0]/2,WINDOW_SIZE[1]/2]),np.array([0,0,25,25]),60)
 Enemy.PLAYER=p
 
 
@@ -147,6 +149,7 @@ def gameLoop(dt):
 	global lastEnemySpawned
 	global stoneSpawnTime
 	global enemySpawnTime
+	global gameOver
 
 	#update everything
 	if remainingTime < 0:
@@ -164,6 +167,10 @@ def gameLoop(dt):
 			explosions.remove(e)
 	for e in entities:
 		e.update(dt)
+		if gameOver==False and e!=p and e.collides(p):
+			explosions.append(Explosion(p.pos))
+			explosionSound.play()
+			gameOver=True
 		
 	for d in drawables:
 		d.update()
@@ -188,8 +195,12 @@ def gameLoop(dt):
 					entities.remove(e)
 				except:
 					pass
-		if l.targetType=='Player' and l.collides(p):
-			print("dead")
+		if gameOver==False and l.targetType=='Player' and l.collides(p):
+			explosions.append(Explosion(p.pos))
+			explosionSound.play()
+			gameOver=True
+			
+			
 	#draw everything
 	window.clear()
 	background.draw()
@@ -200,10 +211,21 @@ def gameLoop(dt):
 		e.draw()
 	for d in drawables:
 		d.draw()
-	p.draw()
+	if gameOver==False:
+		p.draw()
 	remainingTime = STAGE_DURATION-(time()-stageStarted)
 	stageLabel.text = "Stage: "+str(currentStage)
 	remainingSecondsLabel.text = "Remaining Time: "+str(remainingTime)[0:5]
+	
+	if gameOver:
+		if(currentStage<2):
+			stageLabel.text = "GAME OVER SUCKER! Stage " +str(currentStage)
+		elif (currentStage<4):
+			stageLabel.text = "KEEP GOING! Stage " +str(currentStage)
+		elif (currentStage<8):
+			stageLabel.text = "YOU ARE TOO GOOD! Stage  " +str(currentStage)
+			
+		
 
 	stageLabel.draw()
 	remainingSecondsLabel.draw()

@@ -126,10 +126,6 @@ class Ship(Entity):
 			#laserSound.play()
 
 	def update(self,dt):
-		
-		print(self.dx)
-		print(self.dy)
-		
 		self.dx *=Ship.TRACTION
 		self.dy *=Ship.TRACTION
 		
