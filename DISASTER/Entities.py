@@ -16,29 +16,38 @@ class Entity(DisplayObject):
 		self.speed = speed
 	def update(self):
 		raise NotImplementedError('Please implement update method')
-
-
+		
+	def randomStartPos(self):
+		self.dir = rn.randint(0,3)
+		if self.dir == Dir.down:
+			self.pos = np.array([rn.random() * WINDOW_SIZE[0], WINDOW_SIZE[1]])
+		elif self.dir == Dir.up:
+			self.pos = np.array([rn.random() * WINDOW_SIZE[0], -SPRITE_SIZE])
+		elif self.dir == Dir.right:
+			self.pos = np.array([-SPRITE_SIZE, rn.random() * WINDOW_SIZE[1]])
+		elif self.dir == Dir.left:
+			self.pos = np.array([WINDOW_SIZE[0], rn.random() * WINDOW_SIZE[1]])
+				
 class Rock(Entity):
 	MAX_SPEED = 5
 	def __init__(self,pos=None,speed=None):
-		self.dir = rn.randint(0,3)
-		if pos is None:
-			if self.dir == Dir.down:
-				pos = np.array([rn.random() * WINDOW_SIZE[0], WINDOW_SIZE[1]])
-				self.curSpeed = [0, -rn.random() * Rock.MAX_SPEED]
-			elif self.dir == Dir.up:
-				pos = np.array([rn.random() * WINDOW_SIZE[0], -SPRITE_SIZE])
-				self.curSpeed = [0, rn.random() * Rock.MAX_SPEED]
-			elif self.dir == Dir.right:
-				pos = np.array([-SPRITE_SIZE, rn.random() * WINDOW_SIZE[1]])
-				self.curSpeed = [rn.random() * Rock.MAX_SPEED,0]
-			elif self.dir == Dir.left:
-				pos = np.array([WINDOW_SIZE[0], rn.random() * WINDOW_SIZE[1]])
-				self.curSpeed = [-rn.random() * Rock.MAX_SPEED,0]
-		super(Rock, self).__init__(pos, [50,0,25,25],Rock.MAX_SPEED)
+		self.randomStartPos()
+		
+		if self.dir == Dir.down:
+			self.curSpeed = [0, -rn.random() * Rock.MAX_SPEED]
+		elif self.dir == Dir.up:
+			self.curSpeed = [0, rn.random() * Rock.MAX_SPEED]
+		elif self.dir == Dir.right:
+			self.curSpeed = [rn.random() * Rock.MAX_SPEED,0]
+		elif self.dir == Dir.left:
+			self.curSpeed = [-rn.random() * Rock.MAX_SPEED,0]
+				
+		super(Rock, self).__init__(self.pos, [50,0,25,25],Rock.MAX_SPEED)
 
 	def update(self,dt):
 		self.move(self.curSpeed)
+		
+		'''
 		if self.dir == Dir.down and self.pos[1] < -SPRITE_SIZE:
 			self.pos[1] = WINDOW_SIZE[1]
 		elif self.dir == Dir.up and self.pos[1] > WINDOW_SIZE[1]:
@@ -47,7 +56,7 @@ class Rock(Entity):
 			self.pos[0] = -SPRITE_SIZE
 		elif self.dir == Dir.left and self.pos[0] < SPRITE_SIZE:
 			self.pos[0] = WINDOW_SIZE[0]
-
+		'''
 
 class Ship(Entity):
 	TRACTION = .2

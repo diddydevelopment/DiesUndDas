@@ -32,6 +32,8 @@ class DisplayObject():
         if pos[0] + self.w < opos[0] or opos[0]+other.w < pos[0] or pos[1] + self.h < opos[1] or opos[1]+other.h < pos[1]:
                 return False
         return True
+        
+
 
 
 class LaserBeam(DisplayObject):

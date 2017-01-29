@@ -92,12 +92,7 @@ laserSound = pyglet.media.StaticSource(pyglet.media.load('shoot.wav'))
 p = Player(np.array([50,50]),np.array([0,0,25,25]),60)
 Enemy.PLAYER=p
 
-e = Ufo(np.array([650,250]),np.array([0,25,25,25]),10)
-entities.append(e)
 
-e = Mothership(np.array([350,250]),np.array([0,50,62,45]),3)
-e.rotate=False
-entities.append(e)
 
 stageLabel = pyglet.text.Label('Stage: ', font_name='Times New Roman', font_size=36, x=window.width // 2, y=window.height // 2, anchor_x='center', anchor_y='center')
 remainingSecondsLabel = pyglet.text.Label('Remaining Time: ', font_name='Times New Roman', font_size=36, x=window.width // 2, y=window.height // 2-40, anchor_x='center', anchor_y='center')
@@ -108,6 +103,7 @@ remainingTime = -1
 stageStarted = time()
 stoneSpawnTime = -1
 lastRockSpawned = time()
+lastEnemySpawned = time()
 
 
 def cleanSpriteList(sprites):
@@ -122,9 +118,12 @@ def initNewStage():
 	global stageStarted
 	global stoneInterval
 	global stoneSpawnTime
+	global enemySpawnTime
 
 	#initial time between stones
 	initStoneInterval = 1000
+	
+	initEnemyInterval = 10000
 	#increase per stage
 	increase_difficulty = 100
 	#maximum difficulty
@@ -132,6 +131,8 @@ def initNewStage():
 
 	#time between stones
 	stoneSpawnTime = max(initStoneInterval - currentStage*increase_difficulty,hardest)
+	
+	enemySpawnTime = max(initEnemyInterval - currentStage*increase_difficulty,hardest)
 
 	currentStage = currentStage + 1
 	stageStarted = time()
@@ -143,7 +144,9 @@ def gameLoop(dt):
 	global currentStage
 	global stageStarted
 	global lastRockSpawned
+	global lastEnemySpawned
 	global stoneSpawnTime
+	global enemySpawnTime
 
 	#update everything
 	if remainingTime < 0:
@@ -167,6 +170,11 @@ def gameLoop(dt):
 	if stoneSpawnTime < time()*1000-lastRockSpawned:
 		spawnRock()
 		lastRockSpawned = time()*1000
+		
+	if enemySpawnTime < time()*1000-lastEnemySpawned:
+		spawnEnemy()
+		lastEnemySpawned = time()*1000
+
 
 	for l in bullets:
 		l.update()
@@ -206,6 +214,16 @@ def spawnRock():
 def spawnBullet(s,l):
     bullets.append(l)
     drawables.append(l)
+    
+def spawnEnemy():
+	if(np.random.random_sample()<0.2):
+		e = Mothership(np.array([350,250]),np.array([0,50,62,45]),3)
+	else:
+		e = Ufo(np.array([0,0]),np.array([0,25,25,25]),10)
+	e.randomStartPos()
+	entities.append(e)
+	
+	
     
 Ship.addBullet=spawnBullet
 

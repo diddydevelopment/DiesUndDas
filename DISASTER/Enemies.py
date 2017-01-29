@@ -60,6 +60,7 @@ class Mothership(Enemy):
 		self.targetPos = np.array(pos,np.float32)
 		self.bulletType=np.array([33,0,4,4])
 		self.shotTime = .1
+		self.rotate=False
 		
 	def update(self,dt):
 		
@@ -68,7 +69,7 @@ class Mothership(Enemy):
 		
 		
 		if(abs(diffX)<10 and abs(diffY)<10):
-			self.targetPos=np.array([np.random.random_sample()*800,np.random.random_sample()*600])
+			self.targetPos=np.array([np.random.random_sample()*WINDOW_SIZE[0],np.random.random_sample()*WINDOW_SIZE[1]])
 		
 		diffX=np.sign(diffX)*-1
 		diffY=np.sign(diffY)*-1
