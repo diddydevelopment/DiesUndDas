@@ -143,6 +143,3 @@ class Ship(Entity):
 		
 		self.checkShooting()
 		
-		
-		
-		
