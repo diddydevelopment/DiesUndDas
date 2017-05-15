@@ -1,4 +1,4 @@
-from PIL import Image,ImageFilter
+from PIL import Image,ImageFilter,ImageOps
 import matplotlib.pyplot as plt
 import numpy as np
 import random
@@ -6,6 +6,7 @@ from scipy.ndimage.filters import convolve
 
 def createBinaryImage(imgpath,width,height):
 	imgpil = Image.open(imgpath)
+	imgpil = ImageOps.autocontrast(imgpil,cutoff=20)
 	imgpil = imgpil.resize((width,height), Image.ANTIALIAS)
 	img = np.array(imgpil,np.float32)
 	r = 0.2989 * img[:,:,0]
@@ -62,8 +63,7 @@ def createBinaryImage(imgpath,width,height):
 		imgbin = np.array(imgbw1,np.bool)
 	return imgbin
 
-def getESCPOSCode(img,width,height):
-	batch_height = 1 #4 bytes height each horizontal batch
+def getESCPOSCode(img,width,height,batch_height=1):
 
 	ints = np.array([128,64,32,16,8,4,2,1])
 	escpos_len = (width*height)/8
