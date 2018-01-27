@@ -14,7 +14,7 @@ def bezier(points,ns=20):
         rtn_points.append(c)
     return np.array(rtn_points)
 
-bp = bezier([[0,0],[1,0],[1,5]],20)
+bp = bezier([[50,0],[70,0],[70,20],[5,30],[30,40]],200)
 
 bp2 = bp.copy()
 bp2 = bp+np.array([1,0])
