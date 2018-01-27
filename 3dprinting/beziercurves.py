@@ -16,6 +16,11 @@ def bezier(points,ns=20):
 
 bp = bezier([[0,0],[1,0],[1,5]],20)
 
+bp2 = bp.copy()
+bp2 = bp+np.array([1,0])
+bp2 = bp2[::-1]
+bp = np.vstack((bp,bp2))
+
 rtn = '['
 
 for p in bp:
