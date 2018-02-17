@@ -1,0 +1,197 @@
+<html>	
+<head>
+<script>
+function addToList(){{
+	var option = document.createElement("option");
+	option.text = document.getElementById("Day").value + " " + document.getElementById("Hour").value + ":" +document.getElementById("Minute").value;
+	document.getElementById("List").add(option);
+}}
+
+function deleteFromList(){{
+	var list = document.getElementById("List");
+	list.remove(list.selectedIndex); 
+}}
+
+function selectAllList(){{ 
+        selectBox = document.getElementById("List");
+
+        for (var i = 0; i < selectBox.options.length; i++) 
+        {{ 
+             selectBox.options[i].selected = true; 
+        }} 
+}}
+
+function reloadPage(){{ 
+		location.href = location.href.substr(0,location.href.indexOf('?'));
+}}
+
+window.onload = function () {{
+	document.getElementById("add").onclick = addToList;
+	document.getElementById("delete").onclick = deleteFromList;
+	document.getElementById("save").onclick = selectAllList;
+	document.getElementById("activate").onclick = selectAllList;
+	document.getElementById("title").onclick = reloadPage;
+}};
+
+
+</script>	
+	
+<style>
+	html, body {{
+		background-color: rgba(240, 240, 255, 1.0); 
+		height: 100%; 
+		width: 100%; 
+		margin: 0;
+		font-weight: bold;
+	  	color: rgba(255, 255, 255, 0.99);
+	}}
+	
+	.menu{{
+	  	background-color: rgba(9, 0, 128, 0.4);
+		 border-radius: 25px;
+		height: auto;
+		width: 50%; 
+		margin: auto;
+		text-align: center;
+		position: absolute;
+		top: 65%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		
+		line-height: 50px;
+		
+		vertical-align: middle;
+		
+		z-index: 2;
+	}}
+	
+	button{{
+		padding: 5px;
+	}}
+	
+	select{{
+		padding: 5px;
+	}}
+	
+	h1{{
+	  	color: rgba(255, 255, 255, 0.99);
+	  	font-size: 400%;
+	}}
+	
+	h3{{
+	  	color: rgba(255, 255, 255, 0.99);
+	}}
+	
+	a{{
+	  color: rgba(255, 255, 255, 0.99);
+	  text-decoration: none; /* no underline */
+	}}
+	
+	a:visited{{
+		color: rgba(255, 255, 255, 0.99);
+		text-decoration: none;
+	}}
+	
+	#birdy{{
+		 position: absolute;
+        float: right;
+        right: 30px;
+        top: -80px;
+        
+		z-index: -1;
+		width: 140px;
+		height: 160px;
+	}}
+	
+</style>
+	
+	
+</head>
+	
+	
+<body>
+
+<div class="menu">
+	
+	<object id="birdy" height="100%" width="100%" data="birdy.svg" type="image/svg+xml"></object>
+	
+	
+	<form id="feederForm" style="padding-top: 5%;">
+		
+		
+		{}.{}.{} {} {}:{} <button type="submit" id="syncTime" name="syncTime">Sync time</button>
+		<br>
+			
+		<button type="submit" id="feed" name="feed">FEED ME NOW</button>
+		
+		<br>
+		
+		 <select id="Day">
+			<option value="Monday">Monday</option>
+			<option value="Tuesday">Tuesday</option>
+			<option value="Wednesday">Wednesday</option>
+			<option value="Thursday">Thursday</option>
+			<option value="Friday">Friday</option>
+			<option value="Saturday">Saturday</option>
+			<option value="Sunday">Sunday</option>
+		 </select>
+
+
+		 <select id="Hour">
+			<option value="00">00</option>
+			<option value="01">01</option>
+			<option value="02">02</option>
+			<option value="03">03</option>
+			<option value="04">04</option>
+			<option value="05">05</option>
+			<option value="06">06</option>
+			<option value="08">08</option>
+			<option value="09">09</option>
+			<option value="10">10</option>
+			<option value="11">11</option>
+			<option value="12">12</option>
+			<option value="13">13</option>
+			<option value="14">14</option>
+			<option value="15">15</option>
+			<option value="16">16</option>
+			<option value="17">17</option>
+			<option value="18">18</option>
+			<option value="19">19</option>
+			<option value="20">20</option>
+			<option value="21">21</option>
+			<option value="22">22</option>
+			<option value="23">23</option>
+		 </select>
+		 
+		 <select id="Minute">
+			<option value="00">00</option>
+			<option value="05">05</option>
+			<option value="10">10</option>
+			<option value="15">15</option>
+			<option value="20">20</option>
+			<option value="25">25</option>
+			<option value="30">30</option>
+			<option value="35">35</option>
+			<option value="40">40</option>
+			<option value="45">45</option>
+			<option value="50">50</option>
+			<option value="55">55</option>
+		 </select>
+		 
+		<button type="button" id="add">Add</button>
+		<br>
+		<select id="List" name="alarmDates" multiple>{}</select>
+		<button type="button" id="delete">Delete</button>
+		
+		<br>
+		<button type="submit" id="save" name="save">Save</button>
+		<button type="submit" id="activate" name="activate">Activate</button>	
+	</form>
+	
+	<h1 id="title"><a href=".">feedy birdLess</a></h1>
+	
+	
+</div>
+</body>
+</html>
+
