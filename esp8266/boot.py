@@ -3,29 +3,22 @@
 #esp.osdebug(None)
 import gc
 import webrepl
+import network
+import helper_wifi
+
+
+
 webrepl.start()
 gc.collect()
 
-def connect_wifi():
-    import network
 
-    #deactivate access point
-    ap_if = network.WLAN(network.AP_IF)
-    ap_if.active(False)
+connected = helper_wifi.connect_to_saved_ap()
 
-    #connect to my wifi
-    sta_if = network.WLAN(network.STA_IF)
-    if not sta_if.isconnected():
-        print('connecting to network...')
-        sta_if.active(True)
-        sta_if.connect('UPCDEF486B', '82uZtdmvxvpr')
-        while not sta_if.isconnected():
-            pass
-    else:
-        print('is already connected')
-
-    sta_if.ifconfig(('192.168.0.234', '255.255.255.0', '192.168.0.1', '192.168.0.1'))
-    print('network config:', sta_if.ifconfig())
+if not connected:
+    helper_wifi.disable_sta()
+    helper_wifi.enable_ap('esp_ap','password')
 
 
-connect_wifi()
+import http
+
+# connect_wifi('diddydevelopment', 'InternetOfTh1ngs',('192.168.101.225', '255.255.255.0', '192.168.101.1', '192.168.101.1'))

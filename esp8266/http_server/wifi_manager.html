@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head> <title>WIFI-Manager</title> </head>
+<body>
+[py]
+import network
+
+
+
+from helper_wifi import scan_wifi,load_saved_wifis
+
+
+wifis = scan_wifi()
+saved_wifis = load_saved_wifis()
+
+
+if request_method == 'POST':
+	if 'clear_wifis' in post.keys(): # remove all wifis
+		import os
+		os.remove('wifi_credentials.txt')
+		rtn += 'WIFIs deleted'
+	else: # add wifi
+		fh = open('wifi_credentials.txt','a')
+		fh.write((post['ssid'] if post['manual_ssid'] == '' else post['manual_ssid'])+';'+post['password']+'\n')
+		fh.flush()
+		fh.close()
+		rtn += 'WIFI added'
+else:
+
+
+
+	rtn += '<h1>Saved WIFI-networks</h1><table border="1"><tr><td>SSID</td><td>Password</td></tr>'
+	for w in saved_wifis:
+		rtn += '<tr><td>'+w+'</td><td>'+saved_wifis[w]+'</td></tr>'
+	rtn += '</table>'
+
+	rtn += """
+
+		<h1>Add WIFI</h1>
+			<form method="POST" action="wifi_manager.html">
+				<select name="ssid">
+
+
+	"""
+
+	for ss in wifis:
+		rtn += '<option>'+ss+'</option>>'
+
+	rtn += """
+				</select>
+
+		<input type="text" name="manual_ssid" placeholder="...or manual SSID input">
+		<input type="text" name="password" placeholder="Password">
+		<input type="submit" name="add_wifi" value="Add WIFI">
+		</form>
+
+		<form method="POST" action="wifi_manager.html">
+			<input type="submit" name="clear_wifis" value="Delete all saved WIFI-networks">
+		</form>
+	"""
+
+[/py]
+
+
+
+</body>
+</html>
