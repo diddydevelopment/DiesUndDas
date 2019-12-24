@@ -1,0 +1,1 @@
+export PYTHONPATH=/mnt/mmcblk0p2/own/vol/lib/python3.6/site-packages/:$PYTHONPATH
