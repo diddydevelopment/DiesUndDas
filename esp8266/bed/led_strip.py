@@ -165,7 +165,7 @@ class animation_pulse(animation_base):
 	def __init__(self,np):
 		animation_base.__init__(self,np)
 		self.increasing = False
-		self.init_controls([['int', 'delay',10,0,5000],['int', 'brightness',20,0,255]])
+		self.init_controls([['int', 'delay',100,0,5000],['int', 'brightness',50,0,255]])
 		self.val = [self.get_control('brightness'),0,0]
 	def step(self):
 		self.val[0] += 1 if self.increasing else -1
@@ -182,20 +182,40 @@ class animation_pulse(animation_base):
 			print('setting color to: '+str(self.val))
 		time.sleep_ms(self.get_control('delay'))
 		
+class animation_randcol(animation_base):
+	def __init__(self,np):
+		animation_base.__init__(self,np)
+		self.init_controls([['int', 'time_step',5000,0,20000],['int', 'brightness',50,0,255],['int','resolution',10,5,500]])
+		self.new_color = rand_color(self.np.bpp,[self.get_control('brightness'),self.get_control('brightness'),self.get_control('brightness')])
+	def step(self):
+		self.old_color = self.new_color
+		self.new_color = rand_color(self.np.bpp,[self.get_control('brightness'),self.get_control('brightness'),self.get_control('brightness')])
+		for i in range(self.get_control('resolution')):
+			step_col = int_vec(get_col_mix(self.old_color,self.new_color,i/self.get_control('resolution')))
+			print(step_col)
+			self.np.fill(step_col)
+			self.np.write()
+			time.sleep_ms(int(self.get_control('time_step')/self.get_control('resolution')))
 
-		
+class animation_run(animation_base):
+	def __init__(self,np):
+		animation_base.__init__(self,np)
+		self.init_controls([['int', 'time_step',5000,0,20000],
+		['int', 'bg_r',20,0,255],
+		['int', 'bg_g',0,0,255],
+		['int', 'bg_b',0,0,255],
+		['int', 'r',255,0,255],
+		['int', 'g',0,0,255],
+		['int', 'b',0,0,255]
+		])
+		self.cur = 0
+	def step(self):
+		self.np[self.cur] = [self.get_control('bg_r'),self.get_control('bg_g'),self.get_control('bg_b')]
+		self.cur = (self.cur+1) % self.np.n
+		self.np[self.cur] = [self.get_control('r'),self.get_control('g'),self.get_control('b')]
+		self.np.write()
+		time.sleep_ms(int(self.get_control('time_step')/self.np.n))
 
-def animation_rand_col(np,max_brightness=255,time_step=2000,resolution=100):
-	new_color = rand_color(np.bpp,[max_brightness,max_brightness,max_brightness])
-	while True:
-		old_color = new_color
-		new_color = rand_color(np.bpp,[max_brightness,max_brightness,max_brightness])
-		for i in range(resolution):
-			print(new_color)
-			np.fill(int_vec(get_col_mix(old_color,new_color,i/resolution)))
-			np.write()
-			time.sleep_ms(int(time_step/resolution))
-		
 
 def animation_rand_rect(np,max_brightness=20,time_sleep=500):
 	while True:
